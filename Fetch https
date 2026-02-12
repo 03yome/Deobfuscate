@@ -1,0 +1,80 @@
+----------------------------------
+https://youtu.be/oGdRMmbfme8?si=_Q8GZxdE5cF0OW97
+----------------------------------
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "Bypass"
+screenGui.ResetOnSpawn = false -- Keeps the GUI after respawning
+screenGui.Parent = game.CoreGui -- Use game.Players.LocalPlayer.PlayerGui if in a LocalScript in Studio
+local UICorner = Instance.new("UICorner")
+
+-- Create the main Frame (Window)
+local frame = Instance.new("Frame")
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75) -- Center of screen
+frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = frame
+
+-- Create the TextBox (Input field)
+local textBox = Instance.new("TextBox")
+textBox.Name = "UrlInput"
+textBox.Size = UDim2.new(1, -20, 0, 40)
+textBox.Position = UDim2.new(0, 10, 0, 10)
+textBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.PlaceholderText = "Enter URL here..."
+textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+textBox.TextSize = 16
+textBox.Font = Enum.Font.SourceSans
+textBox.ClearTextOnFocus = false
+textBox.Parent = frame
+
+-- Create the Button
+local button = Instance.new("TextButton")
+button.Name = "FetchButton"
+button.Size = UDim2.new(1, -20, 0, 50)
+button.Position = UDim2.new(0, 10, 1, -70) -- Bottom of frame with padding
+button.BackgroundColor3 = Color3.fromRGB(0, 170, 127)
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Text = "Get Code & Copy"
+button.TextSize = 18
+button.Font = Enum.Font.SourceSansBold
+button.Parent = frame
+
+-- Make the Frame Draggable (Optional utility)
+frame.Active = true
+frame.Draggable = true
+
+-- Functionality
+button.MouseButton1Click:Connect(function()
+    local url = textBox.Text
+    
+    if url == "" then
+        print("Please enter a URL.")
+        return
+    end
+
+    local success, result = pcall(function()
+        -- game:HttpGet is an executor specific function
+        return game:HttpGet(url)
+    end)
+
+    if success then
+        -- setclipboard is an executor specific function
+        setclipboard(result)
+        print("Done! Content copied to clipboard.")
+        button.Text = "Copied!"
+        wait(2)
+        button.Text = "Get Code & Copy"
+    else
+        warn("Failed to fetch URL: " .. tostring(result))
+        button.Text = "Error!"
+        wait(2)
+        button.Text = "Get Code & Copy"
+    end
+end)
